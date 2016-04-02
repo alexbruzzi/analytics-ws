@@ -10,9 +10,9 @@ require 'time'
 def from_custom_str(str)
   if str.class.equal?String
     if str == 'now'
-      Time.now
+      Time.now.floor
     elsif str.to_i > 0
-      Time.at(str.to_i)
+      Time.at(str.to_i).floor
     end
   end
 end
