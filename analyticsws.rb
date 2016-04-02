@@ -83,4 +83,42 @@ class AnalyticsWS < Sinatra::Base
 
   end
 
+  get '/:enterprise_id/trend/:trend_name/:trend_type/:timestamp/:limit' do
+    content_type :json
+    params.deep_symbolize_keys!
+    logger.info params
+    trend_class = params[:trend_name].classify.to_sym
+    logger.info "#{ trend_class }, #{Octo.constants}"
+    if Octo.constants.include?trend_class
+      clazz = Octo.const_get(trend_class)
+
+      cnst = params[:trend_type].upcase.to_sym
+      index = Octo::Counter.constants.index(cnst)
+      trend_type = if index
+                     Octo::Counter.const_get(cnst)
+                   end
+      if trend_type.nil?
+        response = { code: 404, message: "No Such trend type #{ cnst }"}
+      else
+        args = {
+            enterprise_id: params[:enterprise_id],
+            ts: from_custom_str(params[:timestamp]),
+            type: trend_type
+        }
+        res = clazz.public_send(:where, args)
+        # set the default response first
+        response = { code: 404, message: 'No data found for this range.'}
+        if res
+          response = res.as_json
+        end
+      end
+      response.to_json
+    else
+      {
+          code: 403,
+          message: 'No trend found'
+      }.to_json
+    end
+  end
+
 end

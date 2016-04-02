@@ -5,7 +5,7 @@ require 'octocore'
 
 Bundler.require
 
-require './analyticsws'
+require_relative('analyticsws')
 
 Octo.connect_with_config_file(File.join(Dir.pwd, 'config', 'config.yml'))
 
