@@ -33,9 +33,7 @@ class AnalyticsWS < Sinatra::Base
   get '/:enterprise_id/count/:counter_name/:counter_type/:timestamp/:limit' do
     content_type :json
     params.deep_symbolize_keys!
-    logger.info params
     counter_class = params[:counter_name].classify.to_sym
-    logger.info "#{ counter_class }, #{Octo.constants}"
     if Octo.constants.include?counter_class
       clazz = Octo.const_get(counter_class)
 
@@ -86,9 +84,7 @@ class AnalyticsWS < Sinatra::Base
   get '/:enterprise_id/trend/:trend_name/:trend_type/:timestamp/:limit' do
     content_type :json
     params.deep_symbolize_keys!
-    logger.info params
     trend_class = params[:trend_name].classify.to_sym
-    logger.info "#{ trend_class }, #{Octo.constants}"
     if Octo.constants.include?trend_class
       clazz = Octo.const_get(trend_class)
 
@@ -101,11 +97,12 @@ class AnalyticsWS < Sinatra::Base
         response = { code: 404, message: "No Such trend type #{ cnst }"}
       else
         args = {
-            enterprise_id: params[:enterprise_id],
             ts: from_custom_str(params[:timestamp]),
-            type: trend_type
         }
-        res = clazz.public_send(:where, args)
+        res = clazz.public_send(:get_trending,
+                                params[:enterprise_id],
+                                trend_type,
+                                args)
         # set the default response first
         response = { code: 404, message: 'No data found for this range.'}
         if res
