@@ -7,6 +7,6 @@ Bundler.require
 
 require_relative('analyticsws')
 
-Octo.connect_with_config_file(File.join(Dir.pwd, 'config', 'config.yml'))
+Octo.connect_with(File.join(Dir.pwd, 'config'))
 
 run AnalyticsWS

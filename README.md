@@ -2,6 +2,9 @@
 
 This web service provides endpoints for counters and trends
 
+- clone the repo
+- `git submodule init`
+
 # Start Server
 
 ```bash
