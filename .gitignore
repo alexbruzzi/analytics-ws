@@ -16,3 +16,4 @@
 /shared/sockets/*
 .DS_Store
 .idea/
+config/config
